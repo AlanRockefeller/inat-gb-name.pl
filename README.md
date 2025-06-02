@@ -111,7 +111,32 @@ In verbose mode it will let you know how many API requests it made.
 
 ## Exception List
 
-The script contains an exception list for known taxonomic discrepancies that should not be reported. Edit the `%exceptions` hash in the code to add your own exceptions.
+Previously, exceptions were hardcoded into the script. As of version 2.0 (updated YYYY-MM-DD), exceptions are managed via an external plain text file named `exceptions.txt`.
+
+**Format for `exceptions.txt`:**
+- Each line represents one exception.
+- The format is: `observation_id<TAB>iNaturalistName`
+  - `observation_id`: The numeric iNaturalist observation ID.
+  - `<TAB>`: A literal tab character separating the ID and the name.
+  - `iNaturalistName`: The iNaturalist taxon name that should be considered an exception if it differs from the GenBank name for this observation ID.
+- Lines starting with `#` are treated as comments and ignored.
+- Empty lines are also ignored.
+
+**Example `exceptions.txt`:**
+```
+# iNat has this as Cortinarius sect. Sanguinei and Genbank just as Cortinarius
+4750485	Dermocybe
+# Gymnopilus on iNat, Gymnopilus sp. 'Albogymnopilus nanus' on Genbank
+84403644	Gymnopilus
+```
+
+**Behavior:**
+- The script will look for `exceptions.txt` in the same directory where `inat-gb-name.pl` is run.
+- If `exceptions.txt` is found and readable, the exceptions defined within it will be loaded.
+- If `exceptions.txt` is not found, or if it's unreadable, the script will proceed with an empty exception list, and a warning may be printed (unless in quiet mode).
+- Malformed lines in the file will be skipped with a warning.
+
+This approach allows users to maintain their own list of exceptions without modifying the script's source code.
 
 ## Changelog
 
